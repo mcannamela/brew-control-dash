@@ -7,11 +7,13 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 
 COPY pyproject.toml .
 COPY poetry.lock .
+COPY setup.py .
 
 RUN poetry export -f requirements.txt --output requirements.txt
 RUN pip install -r requirements.txt
 
 COPY . $PROJECT_DIR
 
-VOLUME $PROJECT_DIR
+RUN pip install -e .
 
+VOLUME $PROJECT_DIR
