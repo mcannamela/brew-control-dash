@@ -1,8 +1,11 @@
 version: "3.9"
 services:
   bash:
-    build: .
+    image: brew-control-dash
     ports:
       - "5000:5000"
+  tests:
+    image: brew-control-dash
+    command: pytest
 
 
