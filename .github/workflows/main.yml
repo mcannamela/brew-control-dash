@@ -6,7 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      #- uses: ./tests
       - name: run pytests
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1
