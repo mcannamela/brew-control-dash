@@ -1,0 +1,7 @@
+name: "run pytests"
+description: "run pytests"
+author: "erin.arai@gmail.com"
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
