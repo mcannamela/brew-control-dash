@@ -3,11 +3,9 @@ on: push
 
 jobs:
   build:
+    name: test brew control
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: run pytests
-        env:
-          COMPOSE_INTERACTIVE_NO_CLI: 1
-        run: docker-compose run tests
+      - run: docker-compose run tests
 
