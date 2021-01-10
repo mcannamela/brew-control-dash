@@ -3,7 +3,7 @@ ENV PROJECT_DIR=/brew-control-dash
 ENV PATH="${PATH}:/root/.poetry/bin"
 WORKDIR $PROJECT_DIR
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+RUN curl --retry 5 -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 
 COPY pyproject.toml .
 COPY poetry.lock .
