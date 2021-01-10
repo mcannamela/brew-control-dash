@@ -9,5 +9,5 @@ jobs:
       - name: run pytests
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1
-          run: docker-compose exec -T tests pytest
+        run: docker-compose exec -T tests pytest
 
