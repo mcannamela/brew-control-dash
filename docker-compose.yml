@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  bash:
+    image: brew-control-dash
+    command: bash
+
+  tests:
+    image: brew-control-dash
+    command: pytest
+
+
