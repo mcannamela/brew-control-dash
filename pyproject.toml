@@ -2,7 +2,7 @@
 name = "brew-control-dash"
 version = "0.1.0"
 description = ""
-authors = ["erin.arai@gmail.com"]
+authors = ["Erin Arai <erin.arai@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
