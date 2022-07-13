@@ -27,12 +27,35 @@ app.layout = html.Div(
         )
     ])
 )
-
-
+fig = plotly.tools.make_subplots(rows=2, cols=1, vertical_spacing=0.2)
+fig['layout']['margin'] = {
+    'l': 30, 'r': 10, 'b': 30, 't': 10
+}
+fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
+data = {
+    'time': [],
+    'temperature': [],
+    'flow rate': [],
+}
+fig.add_trace({
+        'x': data['time'],
+        'y': data['temperature'],
+        'name': 'temperature',
+        'mode': 'lines+markers',
+        'type': 'scatter'
+    }, 1, 1)
+fig.add_trace({
+        'x': data['time'],
+        'y': data['flow rate'],
+        'text': data['time'],
+        'name': 'flow rate',
+        'mode': 'lines+markers',
+        'type': 'scatter'
+    }, 2, 1)
 # Multiple components can update everytime interval gets fired.
 @app.callback(Output('live-update-graph', 'figure'),
               Input('interval-component', 'n_intervals'))
-def update_graph_live(n):
+def update_graph_live(input_data):
     factory = get_client_factory()
 
     test_temp = 30.0
@@ -48,11 +71,11 @@ def update_graph_live(n):
         loop_delay_seconds=.5,
         hangover_delay_seconds=10
     )
-    data = {
-        'time': [],
-        'temperature': [],
-        'flow rate': [],
-    }
+    #data = {
+    #    'time': [],
+    #    'temperature': [],
+    #    'flow rate': [],
+    #}
     brew_state = client.execute_loop()
     #print("are these the same? ", brew_states)
     time = brew_state.dtime
@@ -66,14 +89,14 @@ def update_graph_live(n):
     }
     fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
 
-    fig.append_trace({
+    fig.update_trace({
         'x': data['time'],
         'y': data['temperature'],
         'name': 'temperature',
         'mode': 'lines+markers',
         'type': 'scatter'
     }, 1, 1)
-    fig.append_trace({
+    fig.update_trace({
         'x': data['time'],
         'y': data['flow rate'],
         'text': data['time'],
@@ -87,3 +110,9 @@ def update_graph_live(n):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+
+""" i think this is actually what we need: 
+https://pythonprogramming.net/live-graphs-data-visualization-application-dash-python-tutorial/
+"""
+
