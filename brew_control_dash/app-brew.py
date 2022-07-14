@@ -1,4 +1,7 @@
 import datetime
+import pytz
+from collections import deque
+
 import numpy as np
 import dash
 from dash import dcc, html
@@ -27,31 +30,17 @@ app.layout = html.Div(
         )
     ])
 )
-fig = plotly.tools.make_subplots(rows=2, cols=1, vertical_spacing=0.2)
-fig['layout']['margin'] = {
-    'l': 30, 'r': 10, 'b': 30, 't': 10
-}
-fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
-data = {
-    'time': [],
-    'temperature': [],
-    'flow rate': [],
-}
-fig.add_trace({
-        'x': data['time'],
-        'y': data['temperature'],
-        'name': 'temperature',
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 1, 1)
-fig.add_trace({
-        'x': data['time'],
-        'y': data['flow rate'],
-        'text': data['time'],
-        'name': 'flow rate',
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 2, 1)
+
+time = deque(maxlen=20)
+time_offset = (datetime.datetime.now(tz=pytz.UTC)-datetime.datetime(1970, 1, 1,tzinfo=pytz.UTC)).total_seconds()
+time.append(0)
+temperature = deque(maxlen=20)
+temperature.append(0)
+flow_rate = deque(maxlen=20)
+flow_rate.append(0)
+
+
+
 # Multiple components can update everytime interval gets fired.
 @app.callback(Output('live-update-graph', 'figure'),
               Input('interval-component', 'n_intervals'))
@@ -71,17 +60,14 @@ def update_graph_live(input_data):
         loop_delay_seconds=.5,
         hangover_delay_seconds=10
     )
-    #data = {
-    #    'time': [],
-    #    'temperature': [],
-    #    'flow rate': [],
-    #}
+
     brew_state = client.execute_loop()
-    #print("are these the same? ", brew_states)
-    time = brew_state.dtime
-    data['time'].append(time)
-    data['temperature'].append(brew_state.hlt_temperature)
-    data['flow rate'].append(brew_state.pump_outlet_flowrate)
+    new_time = brew_state.dtime
+
+    delta_time = (new_time-datetime.datetime(1970, 1, 1,tzinfo=pytz.UTC)).total_seconds()
+    time.append(delta_time-time_offset)
+    temperature.append(brew_state.hlt_temperature)
+    flow_rate.append(brew_state.pump_outlet_flowrate)
 
     fig = plotly.tools.make_subplots(rows=2, cols=1, vertical_spacing=0.2)
     fig['layout']['margin'] = {
@@ -89,17 +75,17 @@ def update_graph_live(input_data):
     }
     fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
 
-    fig.update_trace({
-        'x': data['time'],
-        'y': data['temperature'],
+    fig.add_traces({
+        'x': list(time),
+        'y': list(temperature),
         'name': 'temperature',
         'mode': 'lines+markers',
         'type': 'scatter'
     }, 1, 1)
-    fig.update_trace({
-        'x': data['time'],
-        'y': data['flow rate'],
-        'text': data['time'],
+    fig.add_traces({
+        'x': list(time),
+        'y': list(flow_rate),
+        'text': list(time),
         'name': 'flow rate',
         'mode': 'lines+markers',
         'type': 'scatter'
